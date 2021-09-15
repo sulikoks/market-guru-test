@@ -11,14 +11,7 @@ import { SearchUserDto } from "./dto/search-user.dto";
 export class UsersController {
   constructor(private userService: UsersService) {}
 
-  @ApiOperation({ summary: 'Create user' })
-  @ApiResponse({ status: 200, type: User })
-  @Post()
-  create(@Body() userDto: CreateUserDto) {
-    return this.userService.createUser(userDto);
-  }
-
-  @ApiOperation({ summary: 'Get all users' })
+  @ApiOperation({ summary: 'Get user by id' })
   @ApiResponse({ status: 200, type: [User] })
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
