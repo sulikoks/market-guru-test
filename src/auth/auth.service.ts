@@ -17,12 +17,12 @@ export class AuthService {
     private userService: UsersService,
     private jwtService: JwtService,
   ) {}
-  async login(userDto: LoginUserDto) {
+  async login(userDto: LoginUserDto): Promise<{ token: string }> {
     const user = await this.validateUser(userDto);
     return this.generateToken(user);
   }
 
-  async registration(userDto: CreateUserDto) {
+  async registration(userDto: CreateUserDto): Promise<{ token: string }> {
     if (!userDto.email && !userDto.phone) {
       throw new HttpException('Email or Phone is required', HttpStatus.BAD_REQUEST);
     }
@@ -42,14 +42,14 @@ export class AuthService {
     return this.generateToken(user);
   }
 
-  private async generateToken(user: User) {
+  private async generateToken(user: User): Promise<{ token: string }> {
     const payload = { email: user.email, phone: user.phone, id: user.id };
     return {
       token: this.jwtService.sign(payload),
     };
   }
 
-  private async validateUser(userDto: LoginUserDto) {
+  private async validateUser(userDto: LoginUserDto): Promise<User> {
     if (userDto.email) {
       return this.loginByEmail(userDto)
     } else if (userDto.phone) {
@@ -58,14 +58,14 @@ export class AuthService {
     throw new UnauthorizedException('Email or Phone is required');
   }
 
-  private async loginByPhone(userDto: LoginUserDto) {
+  private async loginByPhone(userDto: LoginUserDto): Promise<User> {
     const user = await this.userService.getUserByPhone(userDto.phone);
     const passwordEquals = await bcrypt.compare(userDto.password, user.password);
     if (user && passwordEquals) return user;
     throw new UnauthorizedException('Phone or password is not correct');
   }
 
-  private async loginByEmail(userDto: LoginUserDto) {
+  private async loginByEmail(userDto: LoginUserDto): Promise<User> {
     const user = await this.userService.getUserByEmail(userDto.email);
     const passwordEquals = await bcrypt.compare(userDto.password, user.password);
     if (user && passwordEquals) return user;

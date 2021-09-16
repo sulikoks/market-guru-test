@@ -11,42 +11,51 @@ export class UsersService {
     @InjectModel(User) private userRepository: typeof User,
   ) {}
 
-  async createUser(dto: CreateUserDto) {
+  createUser(dto: CreateUserDto): Promise<User> {
     if (!dto.email && !dto.phone) return;
-    const user = await this.userRepository.create(dto);
-    return user;
+    return this.userRepository.create(dto);
   }
 
-  async getUserById(userId: number) {
+  getUserById(userId: number): Promise<User> {
+    return this.userRepository.findByPk(userId);
+  }
+
+  async updateUserById(userId: number, dto: CreateUserDto): Promise<User> {
     const user = await this.userRepository.findByPk(userId);
-    return user;
+    user.phone = dto.phone;
+    user.email = dto.email;
+    user.name = dto.name;
+    return user.save();
   }
 
-  async getAllUsers(searchUser: SearchUserDto) {
+  deleteUserById(id: number): Promise<number> {
+    return this.userRepository.destroy({
+      where: { id },
+    });
+  }
+
+  getAllUsers(searchUser: SearchUserDto): Promise<User[]> {
     const where = {};
     Object.entries(searchUser).forEach(([key, val]) => {
       if (['offset', 'limit'].includes(key)) return;
       where[key] = { [Op.like]: `%${val}%` };
     });
-    const users = await this.userRepository.findAll({
+    return this.userRepository.findAll({
       where,
       offset: searchUser.offset,
-      limit: searchUser.limit
+      limit: searchUser.limit,
     });
-    return users;
   }
 
-  async getUserByEmail(email: string) {
-    const user = await this.userRepository.findOne({
+  getUserByEmail(email: string): Promise<User> {
+    return this.userRepository.findOne({
       where: { email },
     });
-    return user;
   }
 
-  async getUserByPhone(phone: string) {
-    const user = await this.userRepository.findOne({
+  getUserByPhone(phone: string): Promise<User> {
+    return this.userRepository.findOne({
       where: { phone },
     });
-    return user;
   }
 }
