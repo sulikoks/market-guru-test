@@ -11,6 +11,7 @@ async function start() {
     .setTitle('Приложение магазин и посты')
     .setDescription('REST API документация')
     .setVersion('1.0.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
