@@ -4,6 +4,7 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './users/users.model';
 import { AuthModule } from './auth/auth.module';
+import { AndreyModule } from './andrey/andrey.module';
 
 @Module({
   controllers: [],
@@ -22,6 +23,7 @@ import { AuthModule } from './auth/auth.module';
       models: [User],
       autoLoadModels: true,
     }),
+    AndreyModule,
     UsersModule,
     AuthModule,
   ],
